@@ -2,7 +2,10 @@
 @{
     ViewData["Title"] = "Show";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    Product p = ViewBag.product as Product;
 }
 
 <h1>@ViewBag.Time</h1>
 
+<h1>@ViewBag.product.Id</h1>
+<h1>@ViewBag.product.Name</h1>

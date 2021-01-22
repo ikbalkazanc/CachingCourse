@@ -1,3 +1,4 @@
+using Caching.InMemory.App.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -24,11 +25,17 @@ namespace Caching.InMemory.App
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddSingleton<RedisService>();
+            services.AddLogging();
+            services.AddStackExchangeRedisCache(opt =>
+            {
+                opt.Configuration = Configuration["Redis:Host"]+ ":" + Configuration["Redis:Port"];
+            });
             services.AddMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,RedisService redisService)
         {
             if (env.IsDevelopment())
             {
@@ -46,7 +53,7 @@ namespace Caching.InMemory.App
             app.UseRouting();
 
             app.UseAuthorization();
-
+            redisService.Connect();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
